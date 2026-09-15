@@ -7,10 +7,10 @@ from typing import Any
 
 import streamlit as st
 
-# The Streamlit entry point lives at repository root while the runtime modules
-# and artifacts remain in starter_v0. Add that directory before importing the
-# runtime because its modules use absolute imports (chat, providers, tools).
-STARTER_ROOT = Path(__file__).resolve().parent / "starter_v0"
+# The Streamlit entry point lives in starter_v0 alongside the runtime modules.
+# Add its own directory to sys.path first because the runtime uses absolute
+# imports (chat, providers, tools).
+STARTER_ROOT = Path(__file__).resolve().parent
 if str(STARTER_ROOT) not in sys.path:
     sys.path.insert(0, str(STARTER_ROOT))
 

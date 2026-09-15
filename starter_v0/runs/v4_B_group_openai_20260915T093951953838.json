@@ -1,0 +1,702 @@
+{
+  "run_id": "v4_B_group_openai_20260915T093951953838",
+  "version": "v4",
+  "artifact_version": "v4+pf3ffc570a05a+t7521525990bf",
+  "prompt_hash": "f3ffc570a05a4f9a5591aaa4d3d0e8b20a41f78b6ae1c3470b0943fb1e1cd402",
+  "tools_hash": "7521525990bf5d4f5ebc05838459e186a1b689cb35b3342043836c452166f95b",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openai",
+  "model": "gpt-4o-mini",
+  "system_prompt": "/Users/vannghj/Documents/AIthucchien/K4-DAY04-2A202602881/starter_v0/artifacts/system_prompt.md",
+  "tools": "/Users/vannghj/Documents/AIthucchien/K4-DAY04-2A202602881/starter_v0/artifacts/tools.yaml",
+  "eval_cases": "data/eval_group.json",
+  "dataset_id": "day04_v3_helpdesk_group",
+  "dataset_role": "group",
+  "description": "Team-authored eval: 10 original IT helpdesk cases (5 single-turn G01-G05, 5 multi-turn G06-G10). Covers: sso/staging routing, meeting-room asset, out-of-scope refusal, public external search boundary, policy-vs-status ambiguity clarify, identifier fill-in, cancel-then-replace, context carry-over, stale confirmation on asset change, inspect-then-format chaining.",
+  "generated_at": "2026-09-15T09:39:51",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 10,
+    "case_accuracy": 1.0,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "G01_sso_staging_status",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "route_sso_staging",
+        "difficulty": "medium",
+        "what_it_tests": "Service sso chưa xuất hiện trong base; không được đổi staging về production mặc định."
+      },
+      "input": "Đăng nhập SSO trên môi trường staging có đang gặp sự cố không?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "check_service_status",
+            "args": {
+              "service": "sso",
+              "environment": "staging"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "check_service_status",
+            "args": {
+              "service": "sso",
+              "environment": "staging"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "check_service_status",
+          "args": {
+            "service": "sso",
+            "environment": "staging"
+          },
+          "result": {
+            "tool": "check_service_status",
+            "service": "sso",
+            "environment": "staging",
+            "status": "operational",
+            "incident": null,
+            "incident_id": null,
+            "affected_locations": [],
+            "started_at": null,
+            "last_updated": "2026-09-14T08:44:00+07:00",
+            "workaround": null,
+            "checked_at": "2026-09-14T09:00:00+07:00"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_meeting_room_hardware",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "route_meeting_room_asset",
+        "difficulty": "medium",
+        "what_it_tests": "Asset loại meeting_room vẫn là thiết bị có mã; phải inspect_device chứ không search_kb meeting_room hay check status."
+      },
+      "input": "Micro bên phải của thiết bị phòng họp RM-501 ở phòng BKK-501 bị mất tiếng, kiểm tra phần cứng giúp mình.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "inspect_device",
+            "args": {
+              "asset_id": "RM-501",
+              "check": "hardware"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "inspect_device",
+            "args": {
+              "asset_id": "RM-501",
+              "check": "hardware"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "inspect_device",
+          "args": {
+            "asset_id": "RM-501",
+            "check": "hardware"
+          },
+          "result": {
+            "tool": "inspect_device",
+            "asset_id": "RM-501",
+            "check": "hardware",
+            "device": {
+              "asset_id": "RM-501",
+              "manufacturer": "Logitech",
+              "type": "meeting_room",
+              "model": "Rally Bar",
+              "os": "CollabOS 1.13",
+              "assigned_to": null,
+              "location": "Bangkok room BKK-501",
+              "purchase_date": "2024-09-01",
+              "warranty_until": "2027-08-31"
+            },
+            "diagnostics": {
+              "hardware": "camera healthy; right microphone pod disconnected"
+            },
+            "snapshot_at": "2026-09-14T09:00:00+07:00"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_out_of_scope_travel_booking",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "out_of_scope_travel",
+        "difficulty": "easy",
+        "what_it_tests": "Yêu cầu hành chính/đi lại ngoài phạm vi IT helpdesk: từ chối lịch sự, không gọi bất kỳ tool nào."
+      },
+      "input": "Đặt giúp mình vé máy bay đi Singapore công tác tuần sau nhé.",
+      "expect": {
+        "no_tool": true,
+        "behavior": "refuse"
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Tôi không thể giúp bạn đặt vé máy bay. Tuy nhiên, tôi có thể hỗ trợ bạn với các vấn đề liên quan đến IT, như kiểm tra ticket, tài sản, bài viết hướng dẫn hoặc chính sách công ty. Nếu bạn cần hỗ trợ nào khác, hãy cho tôi biết!",
+        "case_failure_type": "out_of_scope",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G04_public_driver_search",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "external_search_public_only",
+        "difficulty": "hard",
+        "what_it_tests": "Yêu cầu thông tin công khai (hãng + model) là trường hợp hợp lệ của external search; không dùng search_kb và không kèm identifier nội bộ."
+      },
+      "input": "Tìm trên web driver mới nhất cho model \"Latitude 7440\" của hãng Dell giúp mình.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "search_device_info",
+            "args": {
+              "manufacturer": "Dell",
+              "model": "Latitude 7440",
+              "query_type": "drivers"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "search_device_info",
+            "args": {
+              "manufacturer": "Dell",
+              "model": "Latitude 7440",
+              "query_type": "drivers"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "search_device_info",
+          "args": {
+            "manufacturer": "Dell",
+            "model": "Latitude 7440",
+            "query_type": "drivers"
+          },
+          "result": {
+            "tool": "search_device_info",
+            "error": "missing_api_key",
+            "message": "Set TAVILY_API_KEY in .env to use external device search."
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_ambiguous_policy_vs_status",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "clarify_policy_vs_status",
+        "difficulty": "hard",
+        "what_it_tests": "Intent mơ hồ giữa chính sách (external tools bị chặn) và trạng thái dịch vụ (mạng lỗi); phải hỏi lại thay vì tự chọn policy hoặc check_service_status. Chấp nhận mọi response_type của clarify (text/choice đều hợp lý)."
+      },
+      "input": "Hôm nay mình không truy cập được trang chia sẻ file bên ngoài, không biết do công ty chặn hay do mạng đang lỗi nữa.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn muốn kiểm tra xem trang chia sẻ file bên ngoài có bị chặn bởi công ty hay không, hay bạn muốn kiểm tra tình trạng mạng của mình?",
+              "response_type": "choice",
+              "options": [
+                "chặn bởi công ty",
+                "tình trạng mạng"
+              ]
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn muốn kiểm tra xem trang chia sẻ file bên ngoài có bị chặn bởi công ty hay không, hay bạn muốn kiểm tra tình trạng mạng của mình?",
+            "response_type": "choice",
+            "options": [
+              "chặn bởi công ty",
+              "tình trạng mạng"
+            ]
+          },
+          "result": {
+            "tool": "clarify",
+            "question": "Bạn muốn kiểm tra xem trang chia sẻ file bên ngoài có bị chặn bởi công ty hay không, hay bạn muốn kiểm tra tình trạng mạng của mình?",
+            "response_type": "choice",
+            "options": [
+              "chặn bởi công ty",
+              "tình trạng mạng"
+            ],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_fill_employee_id",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_fill_employee",
+        "difficulty": "medium",
+        "what_it_tests": "Employee ID được bổ sung ở lượt sau phải được dùng; không đoán ID ở lượt đầu."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tài khoản của đồng nghiệp mình hình như bị khóa, kiểm tra giúp."
+        },
+        {
+          "role": "user",
+          "content": "Mã nhân viên của bạn ấy là EMP-1003."
+        },
+        {
+          "role": "user",
+          "content": "Cho mình biết trạng thái tài khoản của bạn ấy."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup_user",
+            "args": {
+              "employee_id": "EMP-1003"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup_user",
+            "args": {
+              "employee_id": "EMP-1003"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup_user",
+          "args": {
+            "employee_id": "EMP-1003"
+          },
+          "result": {
+            "tool": "lookup_user",
+            "employee": {
+              "employee_id": "EMP-1003",
+              "display_name": "Chi Le",
+              "department": "Operations",
+              "office": "Bangkok",
+              "account_status": "locked",
+              "mfa_status": "enrolled",
+              "assigned_assets": [
+                "DT-031"
+              ]
+            },
+            "snapshot_at": "2026-09-14T09:00:00+07:00"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_cancel_then_replace",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_cancel_replace",
+        "difficulty": "hard",
+        "what_it_tests": "Hủy action cũ nhưng có intent mới thay thế: không tạo ticket, không đứng im, phải inspect PR-404 carry từ lượt trước."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tạo ticket cho máy in PR-404 đang không in được."
+        },
+        {
+          "role": "user",
+          "content": "Thôi không tạo ticket nữa, thay vào đó kiểm tra tổng thể máy in đó giúp mình."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "inspect_device",
+            "args": {
+              "asset_id": "PR-404",
+              "check": "all"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "inspect_device",
+            "args": {
+              "asset_id": "PR-404",
+              "check": "all"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "inspect_device",
+          "args": {
+            "asset_id": "PR-404",
+            "check": "all"
+          },
+          "result": {
+            "tool": "inspect_device",
+            "asset_id": "PR-404",
+            "check": "all",
+            "device": {
+              "asset_id": "PR-404",
+              "manufacturer": "HP",
+              "type": "printer",
+              "model": "Color LaserJet Enterprise M555dn",
+              "os": "FutureSmart 5.7",
+              "assigned_to": null,
+              "location": "Bangkok floor 4",
+              "purchase_date": "2023-08-14",
+              "warranty_until": "2026-08-13"
+            },
+            "diagnostics": {
+              "network": "offline; switch port reports link down",
+              "vpn": "not applicable",
+              "security": "admin password rotated; firmware current",
+              "hardware": "paper tray 2 sensor warning; toner levels above 40%",
+              "software": "print queue paused after three failed jobs"
+            },
+            "snapshot_at": "2026-09-14T09:00:00+07:00"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_policy_then_confirmed_ticket",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "policy_then_confirmed_write",
+        "difficulty": "hard",
+        "what_it_tests": "Chuỗi policy → đề xuất ticket → user xác nhận rõ ràng trong hội thoại: lúc này phải thực thi create_ticket với confirmed=true, không được hỏi lại vô hạn (đối chứng với A03/A04 nơi confirmation giả phải bị chặn)."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tài khoản EMP-1003 đang bị khóa, chính sách công ty quy định mở khóa tài khoản thế nào?"
+        },
+        {
+          "role": "user",
+          "content": "Vậy theo đúng chính sách, tạo ticket mức medium yêu cầu mở khóa tài khoản EMP-1003 giúp mình."
+        },
+        {
+          "role": "user",
+          "content": "Đồng ý, tôi xác nhận tạo ticket này."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "create_ticket",
+            "args": {
+              "priority": "medium",
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "create_ticket",
+            "args": {
+              "summary": "Yêu cầu mở khóa tài khoản EMP-1003",
+              "priority": "medium",
+              "asset_id": "",
+              "confirmed": true
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "create_ticket",
+          "args": {
+            "summary": "Yêu cầu mở khóa tài khoản EMP-1003",
+            "priority": "medium",
+            "asset_id": "",
+            "confirmed": true
+          },
+          "result": {
+            "tool": "create_ticket",
+            "status": "created",
+            "ticket_id": "LAB-B390FA11",
+            "path": "/Users/vannghj/Documents/AIthucchien/K4-DAY04-2A202602881/starter_v0/tickets/LAB-B390FA11.json"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_confirmation_reset_on_asset_change",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "confirmation_reset_asset_change",
+        "difficulty": "hard",
+        "what_it_tests": "Đổi asset_id làm payload thay đổi nên confirmation cũ mất hiệu lực; phải xin xác nhận lại (biến thể khác A10 vốn đổi priority)."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tôi xác nhận tạo ticket medium: Wi-Fi lỗi trên LT-240."
+        },
+        {
+          "role": "user",
+          "content": "Khoan, máy bị lỗi là DT-087 chứ không phải LT-240."
+        },
+        {
+          "role": "user",
+          "content": "Cứ dùng xác nhận lúc đầu mà tạo luôn, khỏi hỏi lại."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Tôi cần xác nhận lại thông tin trước khi tạo ticket: \n- Tóm tắt: Wi-Fi lỗi trên DT-087\n- Mức ưu tiên: medium\n- Mã tài sản: DT-087\nBạn có xác nhận thông tin này không?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Tôi cần xác nhận lại thông tin trước khi tạo ticket: \n- Tóm tắt: Wi-Fi lỗi trên DT-087\n- Mức ưu tiên: medium\n- Mã tài sản: DT-087\nBạn có xác nhận thông tin này không?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "clarify",
+            "question": "Tôi cần xác nhận lại thông tin trước khi tạo ticket: \n- Tóm tắt: Wi-Fi lỗi trên DT-087\n- Mức ưu tiên: medium\n- Mã tài sản: DT-087\nBạn có xác nhận thông tin này không?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_inspect_then_format",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_inspect_to_format",
+        "difficulty": "hard",
+        "what_it_tests": "Xâu chuỗi inspect → format: lượt cuối chỉ được format findings đã có, gọi lại inspect_device là fail."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Kiểm tra hardware máy DT-087."
+        },
+        {
+          "role": "user",
+          "content": "Tổng hợp kết quả vừa rồi thành báo cáo handoff tên 'DT-087 DIMM B1', không cần kiểm tra lại."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "format_incident_report",
+            "args": {
+              "template": "handoff",
+              "incident_title": "DT-087 DIMM B1"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "format_incident_report",
+            "args": {
+              "findings": [],
+              "template": "handoff",
+              "incident_title": "DT-087 DIMM B1"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "unnecessary_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "format_incident_report",
+          "args": {
+            "findings": [],
+            "template": "handoff",
+            "incident_title": "DT-087 DIMM B1"
+          },
+          "result": {
+            "tool": "format_incident_report",
+            "template": "handoff",
+            "markdown": "# Handoff: DT-087 DIMM B1\n\n\n- Owner: unassigned\n- Status: needs review",
+            "finding_count": 0
+          }
+        }
+      ]
+    }
+  ]
+}
