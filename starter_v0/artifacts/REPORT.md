@@ -2,7 +2,7 @@
 
 ## Team
 
-- Team: Akk-E403
+- Team: K4-DAY04-2A202602881
 - Members:
   - Lê Thị Hoài Thương — 2A202602898 — `thuongle06122004` — UI & Report Coordinator
   - Vi Hùng Đức — 2A202602512 — `viduc173` — Tool & Schema Engineer
