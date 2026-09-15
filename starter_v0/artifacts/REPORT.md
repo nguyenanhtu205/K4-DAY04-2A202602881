@@ -61,6 +61,8 @@ Metric chỉ được coi là evidence hợp lệ khi `provider_error_cases == 0
 
 ## B1. Version evidence
 
+> **Về đánh số version:** Nhóm thực hiện đúng vòng lặp v0 → v3 theo đề bài — vai Prompt Architect (A) tối ưu `system_prompt.md`, vai Tool & Schema Engineer (B) tối ưu `tools.yaml`, mỗi vai log riêng các mốc v0–v3 của mình. **v4 là một vòng bổ sung (tích hợp + hardening) do vai Eval & Red-Team thực hiện sau khi chạy 10 team eval cases và 12 adversarial cases lên bản v3 và phát hiện 4 lỗ hổng còn sót (G05, G09, A06, A11).** v4 gộp artifacts cuối của A+B rồi vá đúng 4 lỗ đó — đây chính là bằng chứng bộ eval của nhóm thực sự phát hiện lỗi và dẫn tới cải tiến đo được, chứ không chỉ để đạt điểm.
+
 | Version | Prompt/tool change | Hypothesis | Metric | Before | After | Run file |
 |---|---|---|---|---:|---:|---|
 | v0 | `tools.yaml` baseline | Establish baseline behavior | case_accuracy | 0.7000 | 0.7000 | `runs/v0_B_base_openai_20260915T063222452934.json` |
