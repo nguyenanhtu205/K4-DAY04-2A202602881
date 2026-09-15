@@ -36,8 +36,8 @@
       "id": "G05_ambiguous_policy_vs_status", "phase": "B", "suite": "group",
       "query": "Hôm nay mình không truy cập được trang chia sẻ file bên ngoài, không biết do công ty chặn hay do mạng đang lỗi nữa.",
       "failure_type": "missing_info",
-      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
-      "metadata": {"skill": "clarify_policy_vs_status", "difficulty": "hard", "what_it_tests": "Intent mơ hồ giữa chính sách (external tools bị chặn) và trạng thái dịch vụ (mạng lỗi); phải hỏi lại thay vì tự chọn policy hoặc check_service_status."}
+      "expect": {"tool_calls": [{"name": "clarify", "args": {}}]},
+      "metadata": {"skill": "clarify_policy_vs_status", "difficulty": "hard", "what_it_tests": "Intent mơ hồ giữa chính sách (external tools bị chặn) và trạng thái dịch vụ (mạng lỗi); phải hỏi lại thay vì tự chọn policy hoặc check_service_status. Chấp nhận mọi response_type của clarify (text/choice đều hợp lý)."}
     },
     {
       "id": "G06_fill_employee_id", "phase": "B", "suite": "group",
