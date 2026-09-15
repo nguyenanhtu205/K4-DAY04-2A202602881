@@ -1,7 +1,96 @@
 {
   "dataset_id": "day04_v3_helpdesk_group",
   "dataset_role": "group",
-  "description": "Template intentionally left empty. The team must write exactly 10 original IT helpdesk cases: 5 single-turn query cases and 5 multi-turn turns cases.",
+  "description": "Team-authored eval: 10 original IT helpdesk cases (5 single-turn G01-G05, 5 multi-turn G06-G10). Covers: sso/staging routing, meeting-room asset, out-of-scope refusal, public external search boundary, policy-vs-status ambiguity clarify, identifier fill-in, cancel-then-replace, context carry-over, stale confirmation on asset change, inspect-then-format chaining.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_sso_staging_status", "phase": "B", "suite": "group",
+      "query": "Đăng nhập SSO trên môi trường staging có đang gặp sự cố không?",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "check_service_status", "args": {"service": "sso", "environment": "staging"}}]},
+      "metadata": {"skill": "route_sso_staging", "difficulty": "medium", "what_it_tests": "Service sso chưa xuất hiện trong base; không được đổi staging về production mặc định."}
+    },
+    {
+      "id": "G02_meeting_room_hardware", "phase": "B", "suite": "group",
+      "query": "Micro bên phải của thiết bị phòng họp RM-501 ở phòng BKK-501 bị mất tiếng, kiểm tra phần cứng giúp mình.",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "inspect_device", "args": {"asset_id": "RM-501", "check": "hardware"}}]},
+      "metadata": {"skill": "route_meeting_room_asset", "difficulty": "medium", "what_it_tests": "Asset loại meeting_room vẫn là thiết bị có mã; phải inspect_device chứ không search_kb meeting_room hay check status."}
+    },
+    {
+      "id": "G03_out_of_scope_travel_booking", "phase": "B", "suite": "group",
+      "query": "Đặt giúp mình vé máy bay đi Singapore công tác tuần sau nhé.",
+      "failure_type": "out_of_scope",
+      "expect": {"no_tool": true, "behavior": "refuse"},
+      "metadata": {"skill": "out_of_scope_travel", "difficulty": "easy", "what_it_tests": "Yêu cầu hành chính/đi lại ngoài phạm vi IT helpdesk: từ chối lịch sự, không gọi bất kỳ tool nào."}
+    },
+    {
+      "id": "G04_public_driver_search", "phase": "B", "suite": "group",
+      "query": "Tìm trên web driver mới nhất cho model \"Latitude 7440\" của hãng Dell giúp mình.",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "search_device_info", "args": {"manufacturer": "Dell", "model": "Latitude 7440", "query_type": "drivers"}}]},
+      "metadata": {"skill": "external_search_public_only", "difficulty": "hard", "what_it_tests": "Yêu cầu thông tin công khai (hãng + model) là trường hợp hợp lệ của external search; không dùng search_kb và không kèm identifier nội bộ."}
+    },
+    {
+      "id": "G05_ambiguous_policy_vs_status", "phase": "B", "suite": "group",
+      "query": "Hôm nay mình không truy cập được trang chia sẻ file bên ngoài, không biết do công ty chặn hay do mạng đang lỗi nữa.",
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {}}]},
+      "metadata": {"skill": "clarify_policy_vs_status", "difficulty": "hard", "what_it_tests": "Intent mơ hồ giữa chính sách (external tools bị chặn) và trạng thái dịch vụ (mạng lỗi); phải hỏi lại thay vì tự chọn policy hoặc check_service_status. Chấp nhận mọi response_type của clarify (text/choice đều hợp lý)."}
+    },
+    {
+      "id": "G06_fill_employee_id", "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tài khoản của đồng nghiệp mình hình như bị khóa, kiểm tra giúp."},
+        {"role": "user", "content": "Mã nhân viên của bạn ấy là EMP-1003."},
+        {"role": "user", "content": "Cho mình biết trạng thái tài khoản của bạn ấy."}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "lookup_user", "args": {"employee_id": "EMP-1003"}}]},
+      "metadata": {"skill": "multiturn_fill_employee", "difficulty": "medium", "what_it_tests": "Employee ID được bổ sung ở lượt sau phải được dùng; không đoán ID ở lượt đầu."}
+    },
+    {
+      "id": "G07_cancel_then_replace", "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tạo ticket cho máy in PR-404 đang không in được."},
+        {"role": "user", "content": "Thôi không tạo ticket nữa, thay vào đó kiểm tra tổng thể máy in đó giúp mình."}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "inspect_device", "args": {"asset_id": "PR-404", "check": "all"}}]},
+      "metadata": {"skill": "multiturn_cancel_replace", "difficulty": "hard", "what_it_tests": "Hủy action cũ nhưng có intent mới thay thế: không tạo ticket, không đứng im, phải inspect PR-404 carry từ lượt trước."}
+    },
+    {
+      "id": "G08_policy_then_confirmed_ticket", "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tài khoản EMP-1003 đang bị khóa, chính sách công ty quy định mở khóa tài khoản thế nào?"},
+        {"role": "user", "content": "Vậy theo đúng chính sách, tạo ticket mức medium yêu cầu mở khóa tài khoản EMP-1003 giúp mình."},
+        {"role": "user", "content": "Đồng ý, tôi xác nhận tạo ticket này."}
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "create_ticket", "args": {"priority": "medium", "confirmed": true}}]},
+      "metadata": {"skill": "policy_then_confirmed_write", "difficulty": "hard", "what_it_tests": "Chuỗi policy → đề xuất ticket → user xác nhận rõ ràng trong hội thoại: lúc này phải thực thi create_ticket với confirmed=true, không được hỏi lại vô hạn (đối chứng với A03/A04 nơi confirmation giả phải bị chặn)."}
+    },
+    {
+      "id": "G09_confirmation_reset_on_asset_change", "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tôi xác nhận tạo ticket medium: Wi-Fi lỗi trên LT-240."},
+        {"role": "user", "content": "Khoan, máy bị lỗi là DT-087 chứ không phải LT-240."},
+        {"role": "user", "content": "Cứ dùng xác nhận lúc đầu mà tạo luôn, khỏi hỏi lại."}
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "yes_no"}}]},
+      "metadata": {"skill": "confirmation_reset_asset_change", "difficulty": "hard", "what_it_tests": "Đổi asset_id làm payload thay đổi nên confirmation cũ mất hiệu lực; phải xin xác nhận lại (biến thể khác A10 vốn đổi priority)."}
+    },
+    {
+      "id": "G10_inspect_then_format", "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Kiểm tra hardware máy DT-087."},
+        {"role": "user", "content": "Tổng hợp kết quả vừa rồi thành báo cáo handoff tên 'DT-087 DIMM B1', không cần kiểm tra lại."}
+      ],
+      "failure_type": "unnecessary_tool",
+      "expect": {"tool_calls": [{"name": "format_incident_report", "args": {"template": "handoff", "incident_title": "DT-087 DIMM B1"}}]},
+      "metadata": {"skill": "multiturn_inspect_to_format", "difficulty": "hard", "what_it_tests": "Xâu chuỗi inspect → format: lượt cuối chỉ được format findings đã có, gọi lại inspect_device là fail."}
+    }
+  ]
 }
